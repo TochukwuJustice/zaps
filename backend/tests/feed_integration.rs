@@ -22,10 +22,11 @@ use uuid::Uuid;
 
 // ── helpers ─────────────────────────────────────────────────────────────────
 
-/// Build a PgPool from `TEST_DATABASE_URL` (falls back to `DATABASE_URL`).
+/// Build a PgPool from the database env vars used in CI and local testing.
 async fn test_pool() -> PgPool {
     let url = std::env::var("TEST_DATABASE_URL")
         .or_else(|_| std::env::var("DATABASE_URL"))
+        .or_else(|_| std::env::var("ZAPS_DATABASE__URL"))
         .expect("Set TEST_DATABASE_URL or DATABASE_URL to run integration tests");
     PgPool::connect(&url)
         .await
